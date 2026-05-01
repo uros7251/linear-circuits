@@ -1,0 +1,12 @@
+.handle {
+  width: 8px !important;
+  height: 8px !important;
+  background: var(--schematic-stroke) !important;
+  border: none !important;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+.handle:hover {
+  opacity: 1;
+}

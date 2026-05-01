@@ -1,0 +1,15 @@
+.inductor-node {
+  color: var(--schematic-stroke);
+}
+@media (prefers-color-scheme: dark) {
+  .inductor-node {
+    color: var(--schematic-stroke);
+  }
+}
+.inductor-label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.inductor-value {
+  font-size: 1.1em;
+} 

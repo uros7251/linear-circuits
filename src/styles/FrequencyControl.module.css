@@ -1,0 +1,56 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  background: var(--canvas-bg, #fff);
+  border: 1px solid var(--node-border);
+  border-radius: 10px;
+  padding: 7px 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  user-select: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: #272a38;
+    border-color: #353849;
+    color: #dde1f0;
+  }
+}
+
+.label {
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.slider {
+  width: 200px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+
+.input {
+  width: 72px;
+  border: none;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  text-align: right;
+  background: transparent;
+  color: inherit;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.unit {
+  opacity: 0.7;
+}

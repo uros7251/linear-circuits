@@ -1,0 +1,135 @@
+.base-node {
+  background-color: var(--canvas-bg);
+  border: 1px solid var(--node-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 2px 2px;
+  min-width: 10px;
+  min-height: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  color: var(--schematic-stroke);
+}
+.base-node-horizontal {
+  width: 120px;
+  height: 60px;
+}
+.base-node-vertical {
+  width: 60px;
+  height: 120px;
+}
+.symbol-node {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.symbol-node svg {
+  color: var(--symbol-color, var(--schematic-stroke));
+}
+
+.symbol-label {
+  position: absolute;
+  bottom: calc(100% - 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.symbol-value {
+  position: absolute;
+  top: calc(100% - 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.symbol-node-vertical .symbol-label {
+  bottom: auto;
+  top: 50%;
+  left: auto;
+  right: calc(100% - 6px);
+  transform: translateY(-50%);
+}
+
+.symbol-node-vertical .symbol-value {
+  top: 50%;
+  left: calc(100% - 6px);
+  transform: translateY(-50%);
+}
+
+.rotate-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(10%, -10%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1em;
+  opacity: 0.15;
+  color: var(--schematic-stroke);
+  transition: opacity 0.2s;
+  z-index: 2;
+  padding: 4px;
+  line-height: 1;
+}
+.rotate-btn:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+.rotate-btn:hover {
+  opacity: 1;
+}
+
+.solver-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  border: 1px solid var(--tooltip-border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.flip-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform: translate(10%, 10%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85em;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  z-index: 2;
+  padding: 4px;
+  line-height: 1;
+}
+
+.flip-btn:focus {
+  outline: none;
+}
+
+.flip-btn:hover {
+  opacity: 1;
+}

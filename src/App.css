@@ -1,0 +1,72 @@
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.resistor-node {
+  --resistor-bg: #fff;
+  --resistor-text: #111;
+  --resistor-border: #333;
+}
+@media (prefers-color-scheme: dark) {
+  .resistor-node {
+    --resistor-bg: #111;
+    --resistor-text: #fff;
+    --resistor-border: #fff;
+  }
+}
+
+.react-flow {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+:root {
+  --rotate-btn: #888;
+  --rotate-btn-hover: #111;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rotate-btn: #bbb;
+    --rotate-btn-hover: #fff;
+  }
+}
