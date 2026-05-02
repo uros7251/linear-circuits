@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { addEdge, applyNodeChanges, applyEdgeChanges, useReactFlow } from 'reactflow';
 import type { Connection, Edge, Node, NodeChange, EdgeChange } from 'reactflow';
@@ -59,8 +59,22 @@ export function useCircuit() {
   // Keep refs in sync so undo/redo callbacks always see current state
   const nodesRef = useRef(nodes);
   const edgesRef = useRef(edges);
+  const omegaRef = useRef(omega);
   useEffect(() => { nodesRef.current = nodes; }, [nodes]);
   useEffect(() => { edgesRef.current = edges; }, [edges]);
+  useEffect(() => { omegaRef.current = omega; }, [omega]);
+
+  // Fingerprint of solver-relevant data only — excludes position and rotation.
+  const solverKey = useMemo(() => {
+    const nodeKeys = nodes.map(({ id, type, data }) => {
+      const { rotation: _, ...solverData } = data;
+      return `${id}|${type}|${JSON.stringify(solverData)}`;
+    });
+    const edgeKeys = edges.map(({ id, source, sourceHandle, target, targetHandle }) =>
+      `${id}|${source}:${sourceHandle}-${target}:${targetHandle}`
+    );
+    return `${nodeKeys.join(';')}@@${edgeKeys.join(';')}@@${omega}`;
+  }, [nodes, edges, omega]);
 
   const historyRef = useRef<Snapshot[]>([]);
   const futureRef = useRef<Snapshot[]>([]);
@@ -74,21 +88,24 @@ export function useCircuit() {
     futureRef.current = [];
   }, []);
 
-  // Auto-solve
+  // Auto-solve — only reruns when solver-relevant data changes (not on position/rotation updates)
   useEffect(() => {
     const timer = setTimeout(() => {
+      const currentNodes = nodesRef.current;
+      const currentEdges = edgesRef.current;
+      const currentOmega = omegaRef.current;
       try {
-        const { branches } = circuitFromUI(nodes, edges);
+        const { branches } = circuitFromUI(currentNodes, currentEdges);
         const solver = new CircuitSolver(branches);
-        solver.solve(omega);
+        solver.solve(currentOmega);
         const states = new Map<string, { current: MathNumericType; voltage: MathNumericType }>();
-        for (const node of nodes) {
+        for (const node of currentNodes) {
           const label = String(node.data?.label ?? node.id);
           const state = solver.stateAt(label);
           if (state) states.set(label, { current: state[0], voltage: state[1] });
         }
         const edgeCurrents = new Map<string, MathNumericType>();
-        for (const edge of edges) {
+        for (const edge of currentEdges) {
           const stateRaw = solver.stateAt(edge.id);
           if (stateRaw) edgeCurrents.set(edge.id, stateRaw[0]);
         }
@@ -101,7 +118,8 @@ export function useCircuit() {
       }
     }, SOLVE_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [nodes, edges, omega]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [solverKey]);
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const hasRemove = changes.some(c => c.type === 'remove');

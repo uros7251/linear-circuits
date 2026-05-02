@@ -20,6 +20,8 @@ import PropertyPanel from './components/panels/PropertyPanel';
 import FrequencyControl from './components/FrequencyControl';
 import type { NodeData } from './circuit/nodeDataTypes';
 
+const edgeTypes = { animatedWire: AnimatedWireEdge };
+
 function CircuitEditor() {
   const {
     nodes, edges,
@@ -125,7 +127,7 @@ function CircuitEditor() {
               <FrequencyControl />
             </div>
             {solverResults.error && (
-              <div style={{ position: 'absolute', zIndex: 10, top: 12, left: '50%', transform: 'translateX(-50%)', color: 'red', background: '#fff8f8', padding: '4px 12px', borderRadius: 4, border: '1px solid red', whiteSpace: 'nowrap' }}>
+              <div style={{ position: 'absolute', zIndex: 10, top: 12, left: '50%', transform: 'translateX(-50%)', color: 'red', background: '#fff8f8', padding: '4px 12px', borderRadius: 4, border: '1px solid red', maxWidth: 'calc(100vw - 24px)', textAlign: 'center' }}>
                 {solverResults.error}
               </div>
             )}
@@ -136,7 +138,7 @@ function CircuitEditor() {
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
               nodeTypes={nodeTypes}
-              edgeTypes={{ animatedWire: AnimatedWireEdge }}
+              edgeTypes={edgeTypes}
               fitView
               connectionMode={ConnectionMode.Loose}
               connectionLineType={ConnectionLineType.SmoothStep}
