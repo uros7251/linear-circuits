@@ -25,7 +25,7 @@
 }
 
 .wrapper {
-  display: flex;
+  position: relative;
   flex-shrink: 0;
   z-index: 20;
 }
@@ -53,7 +53,10 @@
 }
 
 .toggleBtn {
-  align-self: center;
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
   width: 14px;
   height: 40px;
   background: var(--left-panel-bg);
@@ -67,7 +70,6 @@
   color: var(--left-panel-muted);
   padding: 0;
   transition: background 0.12s, color 0.12s;
-  flex-shrink: 0;
 }
 
 .section {

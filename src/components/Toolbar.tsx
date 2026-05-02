@@ -19,12 +19,10 @@ const ClearIcon = () => (
   </svg>
 );
 
-const EiLogo = () => (
-  <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="9"/>
-    <text x="50" y="68" textAnchor="middle"
-      fontFamily="'Gill Sans', 'Gill Sans MT', Calibri, sans-serif"
-      fontWeight="900" fontSize="60" fill="currentColor">Ei</text>
+const CurrentSourceLogo = () => (
+  <svg width="30" height="30" viewBox="0 0 60 60" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="30" cy="30" r="23"/>
+    <path d="M 15,30 L 44,30 M 44,30 L 36,24 M 44,30 L 36,36"/>
   </svg>
 );
 
@@ -43,7 +41,7 @@ const GitHubIcon = () => (
 const Toolbar: React.FC<Props> = ({ onSave, onLoadClick, onClear }) => (
   <div className={styles.toolbar}>
     <div className={styles.logo}>
-      <EiLogo />
+      <CurrentSourceLogo />
     </div>
     <div className={styles.divider} />
     <button className={styles.btn} onClick={onLoadClick}>
