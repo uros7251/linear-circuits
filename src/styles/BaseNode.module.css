@@ -88,6 +88,8 @@
 }
 .rotate-btn:hover {
   opacity: 1;
+  background: transparent;
+  border-color: transparent;
 }
 
 .solver-tooltip {
