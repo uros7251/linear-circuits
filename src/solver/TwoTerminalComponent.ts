@@ -2,6 +2,7 @@ import { abs, complex, conj, divide, isComplex, isZero, multiply, subtract, unar
 import type { MathNumericType } from 'mathjs';
 import { CurrentVoltageCharacteristic } from './CurrentVoltageCharacteristic';
 import { getPrefixValue, SIPrefix } from './SIUnits';
+import { SolverException, SolverErrorType } from './SolverException';
 
 export const ComponentType = {
   IDEAL_VOLTAGE_SOURCE: 1,
@@ -302,13 +303,21 @@ export class Series extends CompositeTwoTerminalComponent {
       case 1:
         return fixedCurrentComponents[0].currentVoltageCharacteristic(omega, true);
       default:
-        throw new Error('Two or more fixed-current component connected in series!');
+        throw new SolverException(
+          SolverErrorType.CONFLICTING_SOURCES,
+          'Two or more current sources connected in series',
+          fixedCurrentComponents.map(c => c.label),
+        );
     }
   }
 
   applyCurrent(current: MathNumericType, omega: number = 0, recursive: boolean = true): void {
     if (!isZero(current) && this.currentVoltageCharacteristic(omega).hasFixedCurrent) {
-      throw new Error('Cannot apply current to fixed-current components');
+      throw new SolverException(
+        SolverErrorType.CONFLICTING_SOURCES,
+        'Cannot apply current to a fixed-current component',
+        this.components.filter(c => c.currentVoltageCharacteristic(omega).hasFixedCurrent).map(c => c.label),
+      );
     }
     super.applyCurrent(current, omega, recursive);
     if (!recursive) return;
@@ -373,7 +382,11 @@ export class Parallel extends CompositeTwoTerminalComponent {
       case 1:
         return fixedVoltageComponents[0].currentVoltageCharacteristic(omega, true);
       default:
-        throw new Error('Two or more fixed-voltage components connected in parallel!');
+        throw new SolverException(
+          SolverErrorType.CONFLICTING_SOURCES,
+          'Two or more voltage sources connected in parallel',
+          fixedVoltageComponents.map(c => c.label),
+        );
     }
   }
 
@@ -399,7 +412,11 @@ export class Parallel extends CompositeTwoTerminalComponent {
 
   applyVoltage(voltage: MathNumericType, omega: number = 0, recursive: boolean = true): void {
     if (this.currentVoltageCharacteristic(omega).hasFixedVoltage) {
-      throw new Error('Cannot apply voltage to fixed-voltage component');
+      throw new SolverException(
+        SolverErrorType.CONFLICTING_SOURCES,
+        'Cannot apply voltage to a fixed-voltage component',
+        this.components.filter(c => c.currentVoltageCharacteristic(omega).hasFixedVoltage).map(c => c.label),
+      );
     }
     super.applyVoltage(voltage, omega, recursive);
     if (!recursive) return;

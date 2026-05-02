@@ -5,14 +5,14 @@ import { Branch } from './Branch';
 import { ComponentType, TwoTerminalComponent } from './TwoTerminalComponent';
 import {
   add,
-  multiply,
-  pinv,
+  lusolve,
   subtract,
   unaryMinus,
   zeros,
   matrix,
 } from 'mathjs';
 import type { MathNumericType, Matrix } from 'mathjs';
+import { SolverException, SolverErrorType } from './SolverException';
 
 export class CircuitSolver {
   private components!: Map<string, TwoTerminalComponent>;
@@ -102,16 +102,19 @@ export class CircuitSolver {
       }
     }
 
-    // Create the system of equations:
-    //  - N node equations (KCL)
-    //  - E equations (one for each ideal voltage source)
-    //  - 1 equation setting the reference node's voltage to 0
+    // Create the square N×N system:
+    //  - Row 0: reference node constraint V[0] = 0 (replaces its redundant KCL row)
+    //  - Rows 1..nodeVoltages.size-1: KCL for each non-reference node
+    //  - Rows nodeVoltages.size..N-1: one equation per fixed-voltage branch (source current unknown)
     const N = nodeVoltages.size + branchCurrents.size;
-    const A = matrix(zeros([N + 1, N], 'sparse'));
-    const b = matrix(zeros([N + 1, 1], 'sparse'));
+    const A = matrix(zeros([N, N], 'sparse'));
+    const b = matrix(zeros([N, 1], 'sparse'));
     const addAt = (m: Matrix<MathNumericType>, index: number[], value: MathNumericType) => {
       m.set(index, add(m.get(index), value));
     };
+
+    // Pin reference node (index 0) to 0 V
+    A.set([0, 0], 1);
 
     for (const [i, branch] of branches.entries()) {
       const cvChar = branch.component.currentVoltageCharacteristic(omega);
@@ -125,17 +128,22 @@ export class CircuitSolver {
         addAt(A, [currentIdx, sinkNodeIdx], -1);
         addAt(b, [currentIdx, 0], cvChar.voltageAtCurrent(0));
       } else {
-        addAt(A, [sourceNodeIdx, sourceNodeIdx], cvChar.admittanceCoefficient);
-        addAt(A, [sourceNodeIdx, sinkNodeIdx], unaryMinus(cvChar.admittanceCoefficient));
-        addAt(b, [sourceNodeIdx, 0], unaryMinus(cvChar.freeCoefficient));
-        addAt(A, [sinkNodeIdx, sourceNodeIdx], unaryMinus(cvChar.admittanceCoefficient));
-        addAt(A, [sinkNodeIdx, sinkNodeIdx], cvChar.admittanceCoefficient);
-        addAt(b, [sinkNodeIdx, 0], cvChar.freeCoefficient);
+        // Skip KCL contributions to row 0 (reference node — row is already pinned)
+        if (sourceNodeIdx !== 0) {
+          addAt(A, [sourceNodeIdx, sourceNodeIdx], cvChar.admittanceCoefficient);
+          addAt(A, [sourceNodeIdx, sinkNodeIdx], unaryMinus(cvChar.admittanceCoefficient));
+          addAt(b, [sourceNodeIdx, 0], unaryMinus(cvChar.freeCoefficient));
+        }
+        if (sinkNodeIdx !== 0) {
+          addAt(A, [sinkNodeIdx, sourceNodeIdx], unaryMinus(cvChar.admittanceCoefficient));
+          addAt(A, [sinkNodeIdx, sinkNodeIdx], cvChar.admittanceCoefficient);
+          addAt(b, [sinkNodeIdx, 0], cvChar.freeCoefficient);
+        }
       }
     }
-    addAt(A, [N, 0], 1);
 
-    const x = multiply(pinv(A), b);
+    const x = CircuitSolver.solveLinearSystem(A, b, N);
+
     for (const [i, branch] of branches.entries()) {
       if (branchCurrents.has(i)) {
         const currentIndex = branchCurrents.get(i)!;
@@ -146,6 +154,29 @@ export class CircuitSolver {
         const sinkVoltage = x.get([nodeVoltages.get(branch.sink)!, 0]) as MathNumericType;
         branch.applyVoltage(subtract(sourceVoltage, sinkVoltage), omega);
       }
+    }
+  }
+
+  private static solveLinearSystem(A: Matrix<MathNumericType>, b: Matrix<MathNumericType>, N: number): Matrix<MathNumericType> {
+    try {
+      return lusolve(A, b) as unknown as Matrix<MathNumericType>;
+    } catch {
+      // Singular matrix — diagnose whether it's a floating node or KCL violation
+      const Adense = A.toArray() as number[][];
+      const bdense = b.toArray() as number[][];
+      for (let row = 1; row < N; row++) {
+        const rowAllZero = Adense[row].every(v => Math.abs(Number(v)) < 1e-12);
+        if (rowAllZero && Math.abs(Number(bdense[row][0])) > 1e-9) {
+          throw new SolverException(
+            SolverErrorType.KCL_VIOLATION,
+            'Circuit has no valid solution: current sources violate KCL',
+          );
+        }
+      }
+      throw new SolverException(
+        SolverErrorType.FLOATING_NODE,
+        'Circuit has no unique solution: one or more nodes have no resistive path to the reference node',
+      );
     }
   }
 

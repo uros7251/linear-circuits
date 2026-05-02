@@ -1,5 +1,6 @@
 import { add, divide, isZero, multiply, subtract, unaryMinus } from 'mathjs';
 import type { MathNumericType } from 'mathjs';
+import { SolverException, SolverErrorType } from './SolverException';
 
 export class CurrentVoltageCharacteristic {
   // aI = yV + c
@@ -50,9 +51,14 @@ export class CurrentVoltageCharacteristic {
     // Short-circuit convention: if zero voltage is applied, current is also zero.
     if (isZero(voltage) && this.isShortCircuit) return 0;
     if (this.hasFixedVoltage) {
-      // fixed, non-zero voltage
-      if (isZero(voltage)) throw new Error('Short circuit!');
-      throw new Error('Cannot apply voltage to constant voltage component');
+      if (isZero(voltage)) throw new SolverException(
+        SolverErrorType.CONFLICTING_SOURCES,
+        'Voltage source short-circuited',
+      );
+      throw new SolverException(
+        SolverErrorType.CONFLICTING_SOURCES,
+        'Cannot apply voltage to a fixed-voltage component',
+      );
     }
     // I = yV + c
     return add(multiply(this.y, voltage), this.c) as MathNumericType;
@@ -60,9 +66,15 @@ export class CurrentVoltageCharacteristic {
 
   voltageAtCurrent(current: MathNumericType): MathNumericType {
     if (this.hasFixedCurrent) {
-      // Open-circuit convention: if no current flows, voltage is indeterminate — use 0.
-      if (isZero(current)) return 0;
-      throw new Error('Cannot apply current to constant current component');
+      if (this.isOpenCircuit) return 0;
+      if (isZero(current)) throw new SolverException(
+        SolverErrorType.KCL_VIOLATION,
+        'Circuit has no valid solution: current source has no return path',
+      );
+      throw new SolverException(
+        SolverErrorType.CONFLICTING_SOURCES,
+        'Cannot apply current to a fixed-current component',
+      );
     }
     if (this.hasFixedVoltage) {
       return unaryMinus(divide(this.c, this.y)) as MathNumericType;
@@ -80,7 +92,10 @@ export class CurrentVoltageCharacteristic {
       throw new Error('Both operands of inSeries operation must be CurrentVoltageCharacteristic');
     }
     if (this.hasFixedCurrent && other.hasFixedCurrent) {
-      throw new Error('Cannot add two constant-current components in series');
+      throw new SolverException(
+        SolverErrorType.CONFLICTING_SOURCES,
+        'Two or more current sources connected in series',
+      );
     }
     if (this.hasFixedCurrent) return this;
     if (other.hasFixedCurrent) return other;
@@ -98,7 +113,10 @@ export class CurrentVoltageCharacteristic {
       throw new Error('Both operands of inParallel operation must be CurrentVoltageCharacteristic');
     }
     if (this.hasFixedVoltage && other.hasFixedVoltage) {
-      throw new Error('Cannot add two constant-voltage components in parallel');
+      throw new SolverException(
+        SolverErrorType.CONFLICTING_SOURCES,
+        'Two or more voltage sources connected in parallel',
+      );
     }
     if (this.hasFixedVoltage) return this;
     if (other.hasFixedVoltage) return other;

@@ -5,6 +5,7 @@ import { Resistor, Capacitor, Inductor, Impedance, IdealCurrentSource, IdealVolt
 import { add, complex } from "mathjs";
 import type { Complex } from "mathjs";
 import { SIPrefix } from "./SIUnits";
+import { SolverException } from "./SolverException";
 function isClose(a: Complex, b: Complex, tol = 1e-6): boolean {
   return Math.abs(a.re - b.re) < tol && Math.abs(a.im - b.im) < tol;
 }
@@ -581,23 +582,27 @@ describe("CircuitSolver", () => {
     expect(circuit.stateAt("R4")?.[0]).toBeCloseTo(0.018, 6);
   });
 
-  test("K4 bridge of current sources - KCL violation silently ignored", () => {
-    // Same K4 topology, but J03 changed from -3A to -2A: 1A imbalance at
-    // nodes 0 and 3. Since all admittance terms are zero, the KCL residual
-    // cannot be corrected via node voltages — pinv absorbs it silently.
-    // Output is V=0 everywhere with no error thrown. Known limitation: KCL
-    // violations in pure-current-source irreducible circuits are undetectable.
+  test("K4 bridge of current sources - KCL violation throws", () => {
+    // K4 with J03 changed from -3A to -2A: 1A imbalance at nodes 0 and 3.
     const circuit = new CircuitSolver([
       new Branch(0, 1, [new IdealCurrentSource("J01", 2)]),
       new Branch(0, 2, [new IdealCurrentSource("J02", 1)]),
-      new Branch(0, 3, [new IdealCurrentSource("J03", -2)]), // should be -3 for KCL
+      new Branch(0, 3, [new IdealCurrentSource("J03", -2)]), // 1A imbalance
       new Branch(1, 2, [new IdealCurrentSource("J12", 1)]),
       new Branch(1, 3, [new IdealCurrentSource("J13", 1)]),
       new Branch(2, 3, [new IdealCurrentSource("J23", 2)]),
     ]);
+    expect(() => circuit.solve()).toThrow(SolverException);
+  });
 
-    expect(() => circuit.solve()).not.toThrow();
-    expect(circuit.stateAt("J01")?.[1]).toBeCloseTo(0);
-    expect(circuit.stateAt("J03")?.[1]).toBeCloseTo(0);
+  // --- FAILING TESTS: assert correct behavior not yet implemented ---
+
+  test("current source with no return path should throw", () => {
+    // 1A source from ground to node 1, nothing else connected to node 1.
+    // KCL at node 1: 1A in, 0A out — no valid solution exists.
+    const circuit = new CircuitSolver([
+      new Branch(0, 1, [new IdealCurrentSource("J", 1)]),
+    ]);
+    expect(() => circuit.solve()).toThrow(SolverException);
   });
 }); 
