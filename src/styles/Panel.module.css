@@ -53,6 +53,12 @@
   flex-shrink: 0;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .title {
   font-size: 11px;
   font-weight: 700;
@@ -79,6 +85,46 @@
 .closeBtn:hover {
   background: var(--panel-close-hover-bg);
   color: var(--panel-text);
+}
+
+.deleteBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--panel-close-bg);
+  color: var(--panel-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.solverState {
+  border-top: 1px solid var(--panel-header-border);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.solverStateRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.solverStateValue {
+  font-size: 13px;
+  color: var(--panel-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .body {

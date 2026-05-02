@@ -24,7 +24,7 @@ function CircuitEditor() {
   const {
     nodes, edges,
     onNodesChange, onEdgesChange, onConnect,
-    addComponent, updateNode, rotateNode,
+    addComponent, updateNode, rotateNode, removeNode,
     undo, redo,
     omega, setOmega,
     solverResults,
@@ -154,6 +154,8 @@ function CircuitEditor() {
               node={selectedNode}
               onUpdate={onUpdate}
               onClose={() => setSelectedNodeId(null)}
+              onDelete={() => { removeNode(selectedNode.id); setSelectedNodeId(null); }}
+              solverState={solverResults.states.get(String(selectedNode.data?.label))}
             />
           )}
         </div>
