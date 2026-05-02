@@ -8,6 +8,10 @@ Draw and simulate linear electrical circuits in your browser — no install, no 
 
 Supports resistors, capacitors, inductors, impedances, voltage sources, and current sources. Handles both DC and AC phasor analysis — sweep frequency with a slider and watch voltages and currents update in real time.
 
+## Privacy
+
+The hosted version uses [Microsoft Clarity](https://clarity.microsoft.com) for anonymous usage analytics (session recordings and heatmaps). No data is collected when running locally.
+
 ## Running Locally
 
 ```bash
