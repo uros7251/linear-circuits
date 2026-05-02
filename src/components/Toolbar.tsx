@@ -19,6 +19,15 @@ const ClearIcon = () => (
   </svg>
 );
 
+const EiLogo = () => (
+  <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="9"/>
+    <text x="50" y="68" textAnchor="middle"
+      fontFamily="'Gill Sans', 'Gill Sans MT', Calibri, sans-serif"
+      fontWeight="900" fontSize="60" fill="currentColor">Ei</text>
+  </svg>
+);
+
 interface Props {
   onSave: () => void;
   onLoadClick: () => void;
@@ -34,8 +43,7 @@ const GitHubIcon = () => (
 const Toolbar: React.FC<Props> = ({ onSave, onLoadClick, onClear }) => (
   <div className={styles.toolbar}>
     <div className={styles.logo}>
-      <span className={styles.logoIcon}>⚡</span>
-      Circuits
+      <EiLogo />
     </div>
     <div className={styles.divider} />
     <button className={styles.btn} onClick={onLoadClick}>
