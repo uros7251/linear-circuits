@@ -93,3 +93,20 @@
 .spacer {
   flex: 1;
 }
+
+.githubLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--toolbar-muted);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.githubLink:hover {
+  background: var(--toolbar-btn-hover-bg);
+  color: var(--toolbar-text);
+}

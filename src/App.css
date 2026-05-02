@@ -60,6 +60,23 @@ html, body, #root {
   width: 100% !important;
 }
 
+.freqWrapper {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  cursor: grab;
+}
+
+@media (max-width: 640px) {
+  .freqWrapper {
+    left: 12px;
+    right: 12px;
+    transform: none;
+  }
+}
+
 :root {
   --rotate-btn: #888;
   --rotate-btn-hover: #111;

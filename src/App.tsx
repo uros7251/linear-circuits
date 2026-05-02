@@ -98,7 +98,7 @@ function CircuitEditor() {
 
   return (
     <CircuitContext.Provider value={circuitContextValue}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', width: '100vw', overflow: 'hidden' }}>
         <Toolbar
           onSave={saveCircuit}
           onLoadClick={() => fileInputRef.current?.click()}
@@ -111,15 +111,16 @@ function CircuitEditor() {
           style={{ display: 'none' }}
           onChange={e => { const f = e.target.files?.[0]; if (f) { loadCircuit(f); e.target.value = ''; } }}
         />
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
           <LeftPanel onAdd={addComponent} onLoadExample={loadCircuitData} />
-          <div style={{ flex: 1, position: 'relative' }}>
+          <div style={{ flex: 1, position: 'relative', containerType: 'inline-size' }}>
             <div
               ref={freqElemRef}
               onMouseDown={onFreqMouseDown}
+              className={freqPos ? undefined : 'freqWrapper'}
               style={freqPos
                 ? { position: 'absolute', bottom: freqPos.bottom, left: freqPos.left, zIndex: 10, cursor: freqDragRef.current ? 'grabbing' : 'grab' }
-                : { position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 10, cursor: 'grab' }}
+                : undefined}
             >
               <FrequencyControl />
             </div>

@@ -11,6 +11,13 @@
   user-select: none;
 }
 
+@media (max-width: 640px) {
+  .container {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .container {
     background: #272a38;
@@ -21,7 +28,7 @@
 
 .label {
   opacity: 0.7;
-  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .slider {
@@ -30,19 +37,36 @@
   accent-color: var(--accent);
 }
 
+@media (max-width: 640px) {
+  .slider {
+    flex: 1;
+    width: auto;
+    min-width: 60px;
+  }
+}
+
+@container (max-width: 300px) {
+  .slider {
+    display: none;
+  }
+}
+
 
 .input {
   width: 72px;
-  border: none;
+  border: 1.5px solid transparent;
+  border-radius: 4px;
   padding: 2px 4px;
   font-size: 0.85rem;
   text-align: right;
   background: transparent;
   color: inherit;
+  transition: border-color 0.15s;
 }
 
 .input:focus {
   outline: none;
+  border-color: var(--accent);
 }
 
 .inputGroup {

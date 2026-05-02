@@ -60,7 +60,9 @@ export default function FrequencyControl() {
 
   return (
     <div className={styles.container}>
-      <span className={styles.label}>f =</span>
+      <svg className={styles.label} width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 0.0 7.0 C0.56 6.13 1.11 5.26 1.67 4.5 C2.22 3.74 2.78 3.11 3.33 2.67 C3.89 2.23 4.44 2.0 5.0 2.0 C5.56 2.0 6.11 2.23 6.67 2.67 C7.22 3.11 7.78 3.74 8.33 4.5 C8.89 5.26 9.44 6.13 10.0 7.0 C10.56 7.87 11.11 8.74 11.67 9.5 C12.22 10.26 12.78 10.89 13.33 11.33 C13.89 11.77 14.44 12.0 15.0 12.0 C15.56 12.0 16.11 11.77 16.67 11.33 C17.22 10.89 17.78 10.26 18.33 9.5 C18.89 8.74 19.44 7.87 20.0 7.0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      </svg>
       <input
         className={styles.slider}
         type="range"
